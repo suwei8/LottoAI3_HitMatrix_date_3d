@@ -22,20 +22,21 @@ jobs:
       - name: Install unzip & gh
         run: sudo apt-get update && sudo apt-get install unzip -y
 
-      - name: Download Seed with Auth
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download Seed via gh CLI
         run: |
-          curl -H "Authorization: token $GH_TOKEN" \
-               -L -o tasks_3d_seed.zip \
-               https://github.com/suwei8/LottoAI3_HitMatrix_date_3d/releases/download/v0.1/tasks_3d.sql.zip
-
-          file tasks_3d_seed.zip
+          mkdir -p seed
+          gh release download v0.1 \
+            --pattern "tasks_3d.sql.zip" \
+            --repo suwei8/LottoAI3_HitMatrix_date_3d \
+            --dir seed
+          echo "📁 下载完成，内容如下："
+          ls -lh seed/
 
       - name: Unzip Seed File
         run: |
-          unzip -P "${{ secrets.BACKUP_PASSWORD }}" tasks_3d_seed.zip -d seed/
+          unzip -P "${{ secrets.BACKUP_PASSWORD }}" seed/tasks_3d.sql.zip -d seed/
           echo "📂 解压内容："
+          [ -f seed/tasks_3d.sql ] || (echo "❌ 解压后未找到 tasks_3d.sql" && exit 1)
           ls -lh seed/
 
       - name: Split & Upload to 3D Releases
