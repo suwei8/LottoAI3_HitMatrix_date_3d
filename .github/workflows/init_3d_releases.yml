@@ -32,6 +32,11 @@ jobs:
 
           file tasks_3d_seed.zip
 
+      - name: Unzip Seed File
+        run: |
+          unzip -P ${{ secrets.BACKUP_PASSWORD }} tasks_3d_seed.zip -d seed/
+          echo "📂 解压内容："
+          ls -lh seed/
 
       - name: Split & Upload to 3D Releases
         run: |
