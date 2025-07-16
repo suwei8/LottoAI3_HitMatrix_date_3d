@@ -62,16 +62,11 @@ jobs:
           )
 
           for pt in "${PLAYTYPES[@]}"; do
-            cp seed/lotto_3d.sql tasks_3d_${pt}.sql
+            cp seed/tasks_3d.sql tasks_3d_${pt}.sql
             zip -P ${{ secrets.BACKUP_PASSWORD }} tasks_3d_${pt}.sql.zip tasks_3d_${pt}.sql
 
-            # ✅ 删除旧 Release（如果存在）
             gh release delete 3d_${pt} --yes --repo suwei8/LottoAI3_HitMatrix_date_3d || echo '✅ Release 不存在，跳过删除'
-
-            # ✅ 创建新 Release
             gh release create 3d_${pt} --repo suwei8/LottoAI3_HitMatrix_date_3d --title "Init 3d_${pt}" --notes "初始化玩法 ${pt}"
-
-            # ✅ 上传 SQL 压缩包
             gh release upload 3d_${pt} tasks_3d_${pt}.sql.zip --repo suwei8/LottoAI3_HitMatrix_date_3d --clobber
 
             echo "✅ 已初始化上传 ➜ 3d_${pt}"
