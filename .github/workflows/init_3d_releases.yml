@@ -68,12 +68,12 @@ jobs:
           )
 
           for pt in "${PLAYTYPES[@]}"; do
-            cp seed/tasks_3d.sql tasks_3d_${pt}.sql
-            zip -P ${{ secrets.BACKUP_PASSWORD }} tasks_3d_${pt}.sql.zip tasks_3d_${pt}.sql
+            cp seed/tasks_3d.sql 3d_tasks_${pt}.sql
+            zip -P ${{ secrets.BACKUP_PASSWORD }} 3d_tasks_${pt}.sql.zip 3d_tasks_${pt}.sql
 
             gh release delete 3d_${pt} --yes --repo suwei8/LottoAI3_HitMatrix_date_3d || echo '✅ Release 不存在，跳过删除'
             gh release create 3d_${pt} --repo suwei8/LottoAI3_HitMatrix_date_3d --title "Init 3d_${pt}" --notes "初始化玩法 ${pt}"
-            gh release upload 3d_${pt} tasks_3d_${pt}.sql.zip --repo suwei8/LottoAI3_HitMatrix_date_3d --clobber
+            gh release upload 3d_${pt} 3d_tasks_${pt}.sql.zip --repo suwei8/LottoAI3_HitMatrix_date_3d --clobber
 
             echo "✅ 已初始化上传 ➜ 3d_${pt}"
           done
