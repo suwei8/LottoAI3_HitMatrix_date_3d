@@ -62,7 +62,7 @@ jobs:
           )
 
           for pt in "${PLAYTYPES[@]}"; do
-            cp seed/tasks_3d.sql tasks_3d_${pt}.sql
+            cp seed/lotto_3d.sql tasks_3d_${pt}.sql
             zip -P ${{ secrets.BACKUP_PASSWORD }} tasks_3d_${pt}.sql.zip tasks_3d_${pt}.sql
 
             # ✅ 删除旧 Release（如果存在）
