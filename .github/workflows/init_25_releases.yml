@@ -1,0 +1,71 @@
+name: Init_25_3D_Releases
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write  # ✅ 关键：允许创建/修改 Release
+
+jobs:
+  init_releases:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}  # ✅ 推荐固定写法
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check gh auth status
+        run: gh auth status
+
+      - name: Install unzip & gh
+        run: sudo apt-get update && sudo apt-get install unzip -y
+
+      - name: Download Seed
+        run: |
+          curl -L -o tasks_3d.sql.zip https://github.com/suwei8/LottoAI3_HitMatrix_date_3d/releases/download/v0.1/tasks_3d.sql.zip
+          unzip -P ${{ secrets.BACKUP_PASSWORD }} tasks_3d.sql.zip -d seed/
+
+      - name: Split & Upload to 25 Releases
+
+        run: |
+          PLAYTYPES=(
+              danguan_1
+              shuangdan_2
+              sandan_3
+              wuma_zuxuan
+              liuma_zuxuan
+              qima_zuxuan
+              sha1
+              sha2
+              baiwei_ding3
+              shiwei_ding3
+              gewei_ding3
+              baiwei_ding1
+              shiwei_ding1
+              gewei_ding1
+              ding_3x3x3_bai
+              ding_3x3x3_shi
+              ding_3x3x3_ge
+              ding_4x4x4_bai
+              ding_4x4x4_shi
+              ding_4x4x4_ge
+              ding_5x5x5_bai
+              ding_5x5x5_shi
+              ding_5x5x5_ge
+          )
+
+          for pt in "${PLAYTYPES[@]}"; do
+            cp seed/lotto_3d.sql lotto_3d_${pt}.sql
+            zip -P ${{ secrets.BACKUP_PASSWORD }} lotto_3d_${pt}.sql.zip lotto_3d_${pt}.sql
+
+            # ✅ 如果该 tag 不存在则新建
+            gh release delete 3d_${pt} --yes --repo suwei8/LottoAI3_HitMatrix_date_3d || echo '✅ Release 不存在，跳过删除'
+            gh release create 3d_${pt} --repo suwei8/LottoAI3_HitMatrix_date_3d --title "Init 3d_${pt}" --notes "初始化玩法 ${pt}"
+
+            # ✅ 上传覆盖
+            gh release upload 3d_${pt} LottoAI3_HitMatrix_date_3d_${pt}.sql.zip --repo suwei8/LottoAI3_HitMatrix_date_3d --clobber
+
+            echo "✅ 已初始化上传 ➜ 3d_${pt}"
+          done
