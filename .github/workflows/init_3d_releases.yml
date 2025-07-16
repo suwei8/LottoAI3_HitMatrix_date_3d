@@ -34,7 +34,7 @@ jobs:
 
       - name: Unzip Seed File
         run: |
-          unzip -P ${{ secrets.BACKUP_PASSWORD }} tasks_3d_seed.zip -d seed/
+          unzip -P "${{ secrets.BACKUP_PASSWORD }}" tasks_3d_seed.zip -d seed/
           echo "📂 解压内容："
           ls -lh seed/
 
